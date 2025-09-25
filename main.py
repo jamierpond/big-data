@@ -1,9 +1,10 @@
 import os
+from queue import Queue
 import time
 import threading
-from collections import deque
+# from collections import deque
 
-q = deque(maxlen=1000000)
+q = Queue(maxsize=100000)  # maxsize can be adjusted as needed
 
 # config
 BATCH_SIZE = 10000
@@ -15,17 +16,17 @@ if os.path.exists("data.log"):
 def creates_lots_of_data_from_a_sensor():
     while True:
         t = time.time()
-        q.append(f"data at {t}" + "x" * 1000)
+        q.put(f"data at {t}" + "x" * 1000)
 
 
 def write_data_to_log():
     with open("data.log", "a") as f:
         while True:
-            print(f"Queue size: {len(q)}")
+            print(f"Queue size: {q.qsize()}")
             n = 0
             str_batch = ""
             while q:
-                str_batch += q.popleft() + "\n"
+                str_batch += q.get() + "\n"
                 n += 1
                 if n >= BATCH_SIZE:
                     f.write(str_batch)
@@ -56,7 +57,7 @@ def main():
                 size_gb = size / (1024 * 1024 * 1024)
                 now = time.time()
                 gb_ps = size_gb / (now - start_time)
-                percent_deque_full = (len(q) / (q.maxlen or 1)) * 100
+                percent_deque_full = (q.qsize() / q.maxsize) * 100
                 print(f"Log file size: {size_mb:.2f} MB ({size_gb:.2f} GB), Write speed: {gb_ps:.4f} GB/s, Queue usage: {percent_deque_full:.2f}%")
         except FileNotFoundError:
             print("Log file not found yet.")
