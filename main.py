@@ -16,8 +16,8 @@ if os.path.exists("data.log"):
 
 def creates_lots_of_data_from_a_sensor():
     while True:
-        t = time.time()
-        q.put(f"data at {t}" + "x" * 1000)
+        t = str(time.time())
+        q.put(t * 100)
 
 
 def write_data_to_log():
