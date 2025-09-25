@@ -2,8 +2,8 @@ import os
 from queue import Queue
 import time
 import threading
-# from collections import deque
 
+# this was faster than using a collections.deque, idk why
 q = Queue(maxsize=100000)  # maxsize can be adjusted as needed
 
 # config
@@ -12,6 +12,7 @@ BATCH_SIZE = 10000
 # clear the log file at start
 if os.path.exists("data.log"):
     os.remove("data.log")
+
 
 def creates_lots_of_data_from_a_sensor():
     while True:
@@ -35,6 +36,7 @@ def write_data_to_log():
             else:
                 print("No data to write, sleeping...")
                 time.sleep(0.1)
+
 
 def main():
     # to calculate write speed
@@ -61,6 +63,7 @@ def main():
                 print(f"Log file size: {size_mb:.2f} MB ({size_gb:.2f} GB), Write speed: {gb_ps:.4f} GB/s, Queue usage: {percent_deque_full:.2f}%")
         except FileNotFoundError:
             print("Log file not found yet.")
+
 
 if __name__ == "__main__":
     main()
